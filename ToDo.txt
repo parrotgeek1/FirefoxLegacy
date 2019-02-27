@@ -1,3 +1,5 @@
 Disable HW acceleration on GMA 950
+Test and fix 10.7
+Test and fix 10.6 x64?
 Fix sandbox instead of disabling it
 Auto updates
