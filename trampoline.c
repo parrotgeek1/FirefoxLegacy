@@ -5,17 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-int EndsWith(const char *str, const char *suffix)
-{
-    if (!str || !suffix)
-        return 0;
-    size_t lenstr = strlen(str);
-    size_t lensuffix = strlen(suffix);
-    if (lensuffix >  lenstr)
-        return 0;
-    return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
-}
+#include <limits.h>
 
 int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *apple[])
 {
@@ -24,7 +14,10 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     char *error;
     int err = 0;
 
-    handle = dlopen (path, RTLD_LAZY);
+    char actualpath[PATH_MAX+1];
+    char *real = realpath(path, actualpath);
+
+    handle = dlopen (real, RTLD_LAZY);
     if (!handle) {
         puts (dlerror());
         err = 1;
@@ -42,7 +35,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     {
         //Name of image (includes full path)
         const char *dyld = _dyld_get_image_name(i);
-        if (EndsWith(dyld, path))
+        if (!strcmp(dyld, real))
         {
             didFind = 1;
             const struct mach_header *header = (struct mach_header *)_dyld_get_image_header(i);
