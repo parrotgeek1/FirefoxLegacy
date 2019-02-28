@@ -23,9 +23,8 @@ int connectx(int socket, const my_sa_endpoints_t *endpoints,
          sae_associd_t associd, unsigned int flags, const struct iovec *iov,
          unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
     if(iovcnt != 1) {
-        puts("connectx with iovcnt != 1");
-        errno = EINVAL;
-        return -1;
+        fprintf(stderr,"unimplemented connectx with iovcnt %u != 1\n",iovcnt);
+        abort();
     }
     *len = sendto(socket, iov[0].iov_base, iov[0].iov_len,0,endpoints->sae_dstaddr, endpoints->sae_dstaddrlen);
     return 0;

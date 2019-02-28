@@ -1,16 +1,5 @@
 Disable HW acceleration on GMA 950
 Make binary signable, and sign it
 Fix sandbox instead of disabling it
+Actually detect hardware video decoder
 Auto updates
-
-VideoToolbox.framework need to dynamically load from privateframeworks on 10.7
-
-it uses
-
-_VTDecompressionSessionCreate
-_VTDecompressionSessionDecodeFrame
-_VTDecompressionSessionInvalidate
-_VTDecompressionSessionWaitForAsynchronousFrames
-_VTSessionCopyProperty
-_kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder
-_kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder
