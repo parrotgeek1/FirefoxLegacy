@@ -71,10 +71,6 @@ float __exp10f(float arg) {
     return powf(10, arg);
 }
 
-int sandbox_init(const char *profile, uint64_t flags, char **errorbuf) {
-	if(errorbuf) *errorbuf = 0;
-	return 0;
-}
 int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char *const parameters[], char **errorbuf) {
 	if(errorbuf) *errorbuf = 0;
 	return 0;

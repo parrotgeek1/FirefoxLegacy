@@ -1,6 +1,6 @@
 #!/bin/bash -e 
 
-cd unsign; make; cd ..
+cd unsign; make -s; cd ..
 
 gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 1 -compatibility_version 1 -o libFxShim.dylib shim.c
 
@@ -29,6 +29,11 @@ ls Firefox\ Legacy.app/Contents/MacOS/*.dylib | fgrep -v libFxShim.dylib | while
 	cat "$a.unsigned" > "$a"
 	rm "$a.unsigned"
 done
+
+install_name_tool -change /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics Firefox\ Legacy.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/Versions/A/CoreText Firefox\ Legacy.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/ImageIO Firefox\ Legacy.app/Contents/MacOS/XUL
+
 unsign/unsign Firefox\ Legacy.app/Contents/MacOS/XUL
 cat Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned > Firefox\ Legacy.app/Contents/MacOS/XUL
 rm Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned

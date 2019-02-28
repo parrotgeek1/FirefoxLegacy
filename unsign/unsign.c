@@ -159,7 +159,6 @@ macho_unsign(FILE *in, FILE *out, const char *infile, const char *outfile, off_t
                 if (cmd != LC_CODE_SIGNATURE) {
                         fcopy(cmdsize, in, out, infile, outfile);
                 } else {
-                        printf("    found LC_CODE_SIGNATURE\n");
                         assert(dataoff == 0);
                         struct linkedit_data_command lc_sig;
                         assert(cmdsize == sizeof(lc_sig));
@@ -188,7 +187,6 @@ ub_unsign(FILE *in, FILE *out, const char *infile, const char *outfile, off_t si
         if (be32dec(&magicb) != FAT_MAGIC) {
                 expect(! fseeko(in, 0, SEEK_SET), infile);
                 macho_unsign(in, out, infile, outfile, size);
-                printf("not a fat binary\n");
                 return;
         }
 
@@ -206,7 +204,6 @@ ub_unsign(FILE *in, FILE *out, const char *infile, const char *outfile, off_t si
         expect(fzero(sizeof(struct fat_arch), nfat_arch, out) == nfat_arch, outfile);
 
         for (uint32_t i = 0; i < nfat_arch; i++) {
-                printf("  processing fat architecture %d of %d\n", i+1, nfat_arch);
                 struct fat_arch arch;
                 expect(fread(&arch, sizeof(arch), 1, in) == 1, infile);
                 off_t inarcho = ftello(in);
@@ -277,7 +274,6 @@ main(int argc, const char *const *argv) {
 
         FILE *in = fdopen(infd, "rb");
         expect(in, infile);
-        printf("reading infile: %s\n", infile);
 
         FILE * outtmp = tmpfile();
         expect(outtmp, "unable to open temp file");
@@ -303,5 +299,4 @@ main(int argc, const char *const *argv) {
             expect(bytes_written == bytes_read, "didnt write output file completely");
           }
         } while (!feof(outtmp));
-        printf("wrote outfile: %s\n", outfile);
 }
