@@ -31,10 +31,6 @@ const CFStringRef kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDec
 
 const CFStringRef kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder = CFSTR("UsingHardwareAcceleratedVideoDecoder");
 
-/*
- _kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder - we need to fake this
- */
-
 __attribute__((constructor)) static void initVTShim(){
     void *handle = dlopen ("/System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox", RTLD_NOW);
     if (!handle) {

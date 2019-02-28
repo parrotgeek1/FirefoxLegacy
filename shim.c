@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
 #include <sys/socket.h>
+#include <dlfcn.h>
+#include <unistd.h>
 
 // fake TCP fast open support for libnspr
 
@@ -19,11 +21,23 @@ typedef struct my_sa_endpoints {
     socklen_t        sae_dstaddrlen; /* size of destination address */
 } my_sa_endpoints_t;
 
-int connectx(int socket, const my_sa_endpoints_t *endpoints,
-         sae_associd_t associd, unsigned int flags, const struct iovec *iov,
-         unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
+typedef int (pr_realconnectx) (int, const my_sa_endpoints_t *, sae_associd_t, unsigned int, const struct iovec *, unsigned int, size_t *, sae_connid_t *);
+typedef pr_realconnectx* pt_pr_realconnectx;
+static pt_pr_realconnectx realconnectx = NULL;
+
+__attribute__((constructor)) static void initConnectxShim(){
+    void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
+    if (!handle) {
+        puts (dlerror());
+        abort();
+    }
+    realconnectx = (pt_pr_realconnectx) dlsym(handle, "connectx");
+}
+
+int connectx(int socket, const my_sa_endpoints_t *endpoints,sae_associd_t associd, unsigned int flags, const struct iovec *iov,unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
+    if(realconnectx) return realconnectx(socket,endpoints,associd,flags,iov,iovcnt,len,connid);
     if(iovcnt != 1) {
-        fprintf(stderr,"unimplemented connectx with iovcnt %u != 1\n",iovcnt);
+        fprintf(stderr,"unimplemented shim connectx with iovcnt %u != 1\n",iovcnt);
         abort();
     }
     *len = sendto(socket, iov[0].iov_base, iov[0].iov_len,0,endpoints->sae_dstaddr, endpoints->sae_dstaddrlen);
@@ -31,17 +45,80 @@ int connectx(int socket, const my_sa_endpoints_t *endpoints,
 }
 
 // new secure intrinsics used by llvm
+// https://github.com/unofficial-opensource-apple/Libc/tree/master/secure
 
-void *__memccpy_chk(void *restrict dst, const void *restrict src, int c, size_t n, int wat) {
-    return memccpy(dst,src,c,n);
+static void my__chk_overlap (const void *a, size_t an, const void *b, size_t bn)
+{
+    if (((uintptr_t)a) <= ((uintptr_t)b)+bn && ((uintptr_t)b) <= ((uintptr_t)a)+an)
+        abort();
 }
 
-size_t __strlcat_chk(char *b, const char *c, size_t n, int wat) {
-    return strlcat(b,c,n);
+void *
+__memccpy_chk (void *dest, const void *src, int c, size_t len, size_t dstlen)
+{
+    void *retval;
+
+    if (__builtin_expect (dstlen < len, 0))
+        abort ();
+
+    /* retval is NULL if len was copied, otherwise retval is the
+     * byte *after* the last one written.
+     */
+    retval = memccpy (dest, src, c, len);
+
+    if (retval != NULL) {
+        len = (uintptr_t)retval - (uintptr_t)dest;
+    }
+
+    my__chk_overlap(dest, len, src, len);
+
+    return retval;
 }
 
-size_t __strlcpy_chk(char *b, const char *c, size_t n, int wat) {
-    return strlcpy(b,c,n);
+size_t
+__strlcat_chk (char *restrict dest, char *restrict src,
+               size_t len, size_t dstlen)
+{
+    size_t initial_srclen;
+    size_t initial_dstlen;
+
+    if (__builtin_expect (dstlen < len, 0))
+        abort ();
+
+    initial_srclen = strlen(src);
+    initial_dstlen = strnlen(dest, len);
+
+    if (initial_dstlen == len)
+        return len+initial_srclen;
+
+    if (initial_srclen < len - initial_dstlen) {
+        my__chk_overlap(dest, initial_srclen + initial_dstlen + 1, src, initial_srclen + 1);
+        memcpy(dest+initial_dstlen, src, initial_srclen + 1);
+    } else {
+        my__chk_overlap(dest, initial_srclen + initial_dstlen + 1, src, len - initial_dstlen - 1);
+        memcpy(dest+initial_dstlen, src, len - initial_dstlen - 1);
+        dest[len-1] = '\0';
+    }
+
+    return initial_srclen + initial_dstlen;
+}
+
+size_t
+__strlcpy_chk (char *restrict dest, char *restrict src,
+               size_t len, size_t dstlen)
+{
+    size_t retval;
+    if (__builtin_expect (dstlen < len, 0))
+        abort ();
+
+    retval = strlcpy (dest, src, len);
+
+    if (retval < len)
+        len = retval + 1;
+
+    my__chk_overlap(dest, len, src, len);
+
+    return retval;
 }
 
 // new math intrinsics used by llvm
