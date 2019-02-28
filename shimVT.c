@@ -88,10 +88,5 @@ OSStatus VTDecompressionSessionWaitForAsynchronousFrames(void *session) {
 }
 
 OSStatus VTSessionCopyProperty(void *session, CFStringRef propertyKey, CFAllocatorRef allocator, void *propertyValueOut) {
-    if(CFEqual(propertyKey,kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder)){
-        //puts("Pretend to use HW decoder always, fixme");
-        propertyValueOut = (void *)kCFBooleanTrue;
-        return noErr;
-    }
     return realVTSessionCopyProperty(session,propertyKey,allocator,propertyValueOut);
 }
