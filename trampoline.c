@@ -7,6 +7,8 @@
 #include <string.h>
 #include <limits.h>
 
+#define MY_WEIRD_LC_MAIN 0x28
+
 int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *apple[])
 {
     void *handle;
@@ -52,7 +54,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
 
                 for(int i = 0; i < header->ncmds > 0; ++i)
                 {
-                    if(command->cmd == LC_MAIN)
+                    if(command->cmd == MY_WEIRD_LC_MAIN)
                     {
                         struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
 
@@ -77,7 +79,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
 
                 for(int i = 0; i < header->ncmds > 0; ++i)
                 {
-                    if(command->cmd == LC_MAIN)
+                    if(command->cmd == MY_WEIRD_LC_MAIN)
                     {
                         struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
 
@@ -110,6 +112,8 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
         {
             int i = (*binary_main)(argc, argv,envp,apple);
             _exit(i);
+        } else {
+            abort();
         }
     }
     return 1;
