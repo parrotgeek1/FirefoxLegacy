@@ -7,6 +7,8 @@ gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamicl
 # NSObject was in CoreFoundation in Lion, not libobjc
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libobjc.A.dylib -Wl,-reexport_library,/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation -current_version 1 -compatibility_version 1 -o libFxShimObjc.dylib shimObjc.c
 
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation -current_version 300 -compatibility_version 300 -o libFxShimFoundation.dylib shimFoundation.m
+
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -current_version 1 -compatibility_version 1 -framework CoreFoundation -o libFxShimVT.dylib shimVT.c
 
 gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-sign-compare -arch x86_64 -mmacosx-version-min=10.7 -o trampoline trampoline.c
@@ -20,6 +22,7 @@ install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dyl
 install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/libFxShimObjc.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation '@loader_path/libFxShimFoundation.dylib' Firefox.app/Contents/MacOS/XUL
 
 sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
