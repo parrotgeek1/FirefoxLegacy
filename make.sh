@@ -14,14 +14,17 @@ install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dyl
 
 sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
-bash ./rebrand.sh
+p=`cat patch.txt`
+bash ./rebrand.sh $p $v
 
 find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' | while read a; do 
 file "$a" | grep -q executable && (mv "$a" "${a}_real"; cp trampoline "$a"; codesign --deep -f -s 'Mac Developer' "$a"; codesign --deep -f -s 'Mac Developer' "${a}_real") || true
 done
 rm -f trampoline
 
+sed -i '' "s/$v/${v}p$p/" Firefox\ Legacy.app/Contents/Info.plist 
+
 codesign --deep -f -s 'Mac Developer' Firefox\ Legacy.app
-rm -f Firefox\ Legacy\ v$v.zip 
+rm -f Firefox\ Legacy\ ${v}p$p.zip 
 xattr -cr Firefox\ Legacy.app
-zip -9 -r Firefox\ Legacy\ v$v.zip Firefox\ Legacy.app
+zip -9 -r Firefox\ Legacy\ ${v}p$p.zip Firefox\ Legacy.app
