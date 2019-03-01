@@ -67,31 +67,6 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
                     command = (load_command*)imageHeaderPtr;
                 }
             }
-            else
-            {
-                const struct mach_header *header = (struct mach_header *)_dyld_get_image_header(i);
-
-                uint8_t *imageHeaderPtr = (uint8_t*)header;
-                typedef struct load_command load_command;
-
-                imageHeaderPtr += sizeof(struct mach_header);
-                load_command *command = (load_command*)imageHeaderPtr;
-
-                for(int i = 0; i < header->ncmds > 0; ++i)
-                {
-                    if(command->cmd == MY_WEIRD_LC_MAIN)
-                    {
-                        struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
-
-                        entryoff = ucmd.entryoff;
-                        didFind = 1;
-                        break;
-                    }
-
-                    imageHeaderPtr += command->cmdsize;
-                    command = (load_command*)imageHeaderPtr;
-                }
-            }
 
             if (didFind)
             {
@@ -110,8 +85,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
 
         if (err == 0)
         {
-            int i = (*binary_main)(argc, argv,envp,apple);
-            _exit(i);
+            return (*binary_main)(argc, argv,envp,apple);
         } else {
             abort();
         }

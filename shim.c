@@ -32,9 +32,10 @@ typedef int (pr_realconnectx) (int, const my_sa_endpoints_t *, sae_associd_t, un
 typedef pr_realconnectx* pt_pr_realconnectx;
 static pt_pr_realconnectx realconnectx = NULL;
 
-typedef int (pr_realposix_spawnattr_setflags) (posix_spawnattr_t *, short);
-typedef pr_realposix_spawnattr_setflags* pt_pr_realposix_spawnattr_setflags;
-static pt_pr_realposix_spawnattr_setflags realposix_spawnattr_setflags = NULL;
+typedef int (pr_realposix_spawn) (pid_t *restrict, const char *restrict,const posix_spawn_file_actions_t *,const posix_spawnattr_t *restrict, char *const [restrict],char *const [restrict]);
+typedef pr_realposix_spawn* pt_pr_realposix_spawn;
+static pt_pr_realposix_spawn realposix_spawn = NULL;
+static pt_pr_realposix_spawn realposix_spawnp = NULL;
 
 __attribute__((constructor)) static void initCShim(){
     void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
@@ -43,9 +44,14 @@ __attribute__((constructor)) static void initCShim(){
         abort();
     }
     realconnectx = (pt_pr_realconnectx) dlsym(handle, "connectx");
-    realposix_spawnattr_setflags = (pt_pr_realposix_spawnattr_setflags) dlsym(handle, "posix_spawnattr_setflags");
-    if(!realposix_spawnattr_setflags) {
-        puts("No posix_spawnattr_setflags");
+    realposix_spawn = (pt_pr_realposix_spawn) dlsym(handle, "posix_spawn");
+    if(!realposix_spawn) {
+        puts("No posix_spawn");
+        abort();
+    }
+    realposix_spawnp = (pt_pr_realposix_spawn) dlsym(handle, "posix_spawnp");
+    if(!realposix_spawnp) {
+        puts("No posix_spawnp");
         abort();
     }
     struct utsname buffer;
@@ -207,10 +213,42 @@ static void SetAllFDsToCloseOnExec() {
 }
 
 // kernel panic workaround posix_spawnattr_setflags cloexec simply does not work in Lion at all
-int posix_spawnattr_setflags(posix_spawnattr_t *attr, short flags) {
-    if(lion && (flags & POSIX_SPAWN_CLOEXEC_DEFAULT)==POSIX_SPAWN_CLOEXEC_DEFAULT) {
-        flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
-        SetAllFDsToCloseOnExec();
+int
+posix_spawn(pid_t *restrict pid, const char *restrict path,
+            const posix_spawn_file_actions_t *file_actions,
+            const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
+            char *const envp[restrict]){
+    if(attrp && lion) {
+        short flags = 0;
+        if(posix_spawnattr_getflags(attrp,&flags) == 0) {
+            if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
+                flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
+                if(posix_spawnattr_setflags((posix_spawnattr_t *)attrp,flags) != 0) {
+                    abort();
+                }
+                SetAllFDsToCloseOnExec();
+            }
+        }
     }
-    return realposix_spawnattr_setflags(attr,flags);
+    return realposix_spawn(pid,path,file_actions,attrp,argv,envp);
+}
+
+int
+posix_spawnp(pid_t *restrict pid, const char *restrict file,
+             const posix_spawn_file_actions_t *file_actions,
+             const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
+             char *const envp[restrict]){
+    if(attrp && lion) {
+        short flags = 0;
+        if(posix_spawnattr_getflags(attrp,&flags) == 0) {
+            if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
+                flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
+                if(posix_spawnattr_setflags((posix_spawnattr_t *)attrp,flags) != 0) {
+                    abort();
+                }
+                SetAllFDsToCloseOnExec();
+            }
+        }
+    }
+    return realposix_spawnp(pid,file,file_actions,attrp,argv,envp);
 }

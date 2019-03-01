@@ -1,6 +1,0 @@
-NSSharingServiceNamePostOnTwitter - done
-NSUserNotificationDefaultSoundName - done
-__exp10 - done
-__exp10f - done
-kCTWritingDirectionAttributeName - done (sort of) - https://github.com/mozilla/gecko/commit/79c695ed033cb92c73b3e1de451c94f568821be8
-Class: NSSharingService - https://hg.mozilla.org/mozilla-central/file/tip/widget/cocoa/nsMacSharingService.mm - done (stub)
