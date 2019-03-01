@@ -5,9 +5,15 @@
 #include <string.h>
 #define _POSIX_C_SOURCE 200809L
 #include <sys/socket.h>
+#undef _POSIX_C_SOURCE
 #include <dlfcn.h>
 #include <unistd.h>
 #include <spawn.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <sys/utsname.h>
+
+static int lion = 0;
 
 // fake TCP fast open support for libnspr
 
@@ -26,13 +32,34 @@ typedef int (pr_realconnectx) (int, const my_sa_endpoints_t *, sae_associd_t, un
 typedef pr_realconnectx* pt_pr_realconnectx;
 static pt_pr_realconnectx realconnectx = NULL;
 
-__attribute__((constructor)) static void initConnectxShim(){
+typedef int (pr_realposix_spawnattr_setflags) (posix_spawnattr_t *, short);
+typedef pr_realposix_spawnattr_setflags* pt_pr_realposix_spawnattr_setflags;
+static pt_pr_realposix_spawnattr_setflags realposix_spawnattr_setflags = NULL;
+
+__attribute__((constructor)) static void initCShim(){
     void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
     if (!handle) {
         puts (dlerror());
         abort();
     }
     realconnectx = (pt_pr_realconnectx) dlsym(handle, "connectx");
+    realposix_spawnattr_setflags = (pt_pr_realposix_spawnattr_setflags) dlsym(handle, "posix_spawnattr_setflags");
+    if(!realposix_spawnattr_setflags) {
+        puts("No posix_spawnattr_setflags");
+        abort();
+    }
+    struct utsname buffer;
+    if (uname(&buffer) != 0) {
+        puts("uname failed");
+        abort();
+    }
+
+    if(strlen(buffer.release) >= 3) {
+        if(buffer.release[0]=='1' && buffer.release[1]=='1' && buffer.release[2]=='.') {
+            lion = 1;
+        }
+    }
+
 }
 
 int connectx(int socket, const my_sa_endpoints_t *endpoints,sae_associd_t associd, unsigned int flags, const struct iovec *iov,unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
@@ -149,13 +176,41 @@ float __exp10f(float arg) {
 }
 
 int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char *const parameters[], char **errorbuf) {
-	if(errorbuf) *errorbuf = 0;
-	return 0;
-}
-void sandbox_free_error(char *errorbuf) { }
-
-// kernel panic workaround
-int posix_spawnattr_setflags(posix_spawnattr_t *attr, short flags) {
-    puts("XXXXX posix_spawnattr_setflags");
+    if(errorbuf) *errorbuf = 0;
     return 0;
+}
+
+// from old Mozilla code
+static void SetAllFDsToCloseOnExec() {
+    const char fd_dir[] = "/dev/fd";
+    DIR *dir = opendir(fd_dir);
+    if (NULL == dir) {
+        fprintf(stderr,"Unable to open %s\n", fd_dir);
+        return;
+    }
+
+    struct dirent *ent;
+    while ((ent = readdir(dir))) {
+        // Skip . and .. entries.
+        if (ent->d_name[0] == '.')
+            continue;
+        int i = atoi(ent->d_name);
+        // We don't close stdin, stdout or stderr.
+        if (i <= STDERR_FILENO)
+            continue;
+
+        int flags = fcntl(i, F_GETFD);
+        if ((flags == -1) || (fcntl(i, F_SETFD, flags | FD_CLOEXEC) == -1)) {
+            fprintf(stderr,"fcntl failure.\n");
+        }
+    }
+}
+
+// kernel panic workaround posix_spawnattr_setflags cloexec simply does not work in Lion at all
+int posix_spawnattr_setflags(posix_spawnattr_t *attr, short flags) {
+    if(lion && (flags & POSIX_SPAWN_CLOEXEC_DEFAULT)==POSIX_SPAWN_CLOEXEC_DEFAULT) {
+        flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
+        SetAllFDsToCloseOnExec();
+    }
+    return realposix_spawnattr_setflags(attr,flags);
 }
