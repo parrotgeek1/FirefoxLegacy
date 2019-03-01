@@ -9,6 +9,10 @@ gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-mi
 
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation -current_version 300 -compatibility_version 300 -o libFxShimFoundation.dylib shimFoundation.m
 
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/Versions/A/CoreText -framework CoreFoundation -current_version 1 -compatibility_version 1 -o libFxShimCoreText.dylib shimCoreText.c
+
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit -current_version 45 -compatibility_version 45 -o libFxShimAppKit.dylib shimAppKit.m
+
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -current_version 1 -compatibility_version 1 -framework CoreFoundation -o libFxShimVT.dylib shimVT.c
 
 gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-sign-compare -arch x86_64 -mmacosx-version-min=10.7 -o trampoline trampoline.c
@@ -23,6 +27,7 @@ install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dyl
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/libFxShimObjc.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation '@loader_path/libFxShimFoundation.dylib' Firefox.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit '@loader_path/libFxShimAppKit.dylib' Firefox.app/Contents/MacOS/XUL
 
 sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
@@ -50,7 +55,7 @@ ls Firefox\ Legacy.app/Contents/MacOS/*.dylib | fgrep -v libFxShim | while read 
 done
 
 install_name_tool -change /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics Firefox\ Legacy.app/Contents/MacOS/XUL
-install_name_tool -change /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/Versions/A/CoreText Firefox\ Legacy.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText '@loader_path/libFxShimCoreText.dylib' Firefox\ Legacy.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/ImageIO Firefox\ Legacy.app/Contents/MacOS/XUL
 
 unsign/unsign Firefox\ Legacy.app/Contents/MacOS/XUL
