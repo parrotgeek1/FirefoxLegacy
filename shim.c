@@ -218,7 +218,7 @@ posix_spawn(pid_t *restrict pid, const char *restrict path,
             const posix_spawn_file_actions_t *file_actions,
             const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
             char *const envp[restrict]){
-    if(attrp && lion) {
+    if(lion && attrp) {
         short flags = 0;
         if(posix_spawnattr_getflags(attrp,&flags) == 0) {
             if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
@@ -238,7 +238,7 @@ posix_spawnp(pid_t *restrict pid, const char *restrict file,
              const posix_spawn_file_actions_t *file_actions,
              const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
              char *const envp[restrict]){
-    if(attrp && lion) {
+    if(lion && attrp) {
         short flags = 0;
         if(posix_spawnattr_getflags(attrp,&flags) == 0) {
             if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
