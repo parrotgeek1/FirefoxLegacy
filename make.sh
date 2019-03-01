@@ -28,8 +28,9 @@ install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/libFxShimObjc.d
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation '@loader_path/libFxShimFoundation.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit '@loader_path/libFxShimAppKit.dylib' Firefox.app/Contents/MacOS/XUL
+perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' Firefox.app/Contents/MacOS/XUL
 
-sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
+LC_ALL=C sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
 bash ./rebrand.sh $p $v

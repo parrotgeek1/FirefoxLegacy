@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <dlfcn.h>
 #include <unistd.h>
+#include <spawn.h>
 
 // fake TCP fast open support for libnspr
 
@@ -152,3 +153,9 @@ int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char
 	return 0;
 }
 void sandbox_free_error(char *errorbuf) { }
+
+// kernel panic workaround
+int posix_spawnattr_setflags(posix_spawnattr_t *attr, short flags) {
+    puts("XXXXX posix_spawnattr_setflags");
+    return 0;
+}

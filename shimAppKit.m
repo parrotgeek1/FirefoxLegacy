@@ -15,15 +15,15 @@ __attribute__((constructor)) static void initNSSharingServiceShim(){
     realNSSharingService = (Class) dlsym(handle, "OBJC_CLASS_$_NSSharingService");
 }
 
-@interface NSSharingService : NSObject
+@interface NSSharingServic2 : NSObject
 
 +(NSArray *)sharingServicesForItems:(NSArray *)items;
-+ (NSSharingService *)sharingServiceNamed:(NSString *)serviceName;
++ (id)sharingServiceNamed:(NSString *)serviceName;
 
 @end
 
 
-@implementation NSSharingService
+@implementation NSSharingServic2
 
 +(NSArray *)sharingServicesForItems:(NSArray *)items {
     if(realNSSharingService)
@@ -31,7 +31,7 @@ __attribute__((constructor)) static void initNSSharingServiceShim(){
     return [NSArray array];
 }
 
-+(NSSharingService *)sharingServiceNamed:(NSString *)serviceName{
++(id)sharingServiceNamed:(NSString *)serviceName{
     if(realNSSharingService)
         return [realNSSharingService sharingServiceNamed:serviceName];
     return nil;
