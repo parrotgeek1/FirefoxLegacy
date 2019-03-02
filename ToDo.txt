@@ -2,6 +2,5 @@ Disable HW acceleration on GMA 950
 Make binary signable, and sign it
 Fix sandbox instead of disabling it
 Hide share button on Lion
-Memory leaks
 kCTWritingDirectionAttributeName really implement
 Auto updates
