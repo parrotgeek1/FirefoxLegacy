@@ -33,7 +33,6 @@ perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' 
 LC_ALL=C sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
-bash ./rebrand.sh $p $v
 
 #objc
 #Binary file ./Firefox Legacy.app/Contents/Library/LaunchServices/org.mozilla.updater_real matches
@@ -44,7 +43,7 @@ install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxS
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater"
 rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
-find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' | while read a; do 
+find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' -not -name '*.py' | while read a; do 
 file "$a" | grep -q executable && (mv "$a" "${a}_real"; cp trampoline "$a"; unsign/unsign "${a}_real"; cat "${a}_real.unsigned" > "${a}_real"; rm "${a}_real.unsigned"; perl -pi -e 's/\x28\x00\x00\x80/\x28\x00\x00\x00/' "${a}_real") || true
 done
 rm -f trampoline
