@@ -63,10 +63,10 @@ unsign/unsign Firefox\ Legacy.app/Contents/MacOS/XUL
 cat Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned > Firefox\ Legacy.app/Contents/MacOS/XUL
 rm Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned
 
-sed -i '' "s/$v/${v}p$p/" Firefox\ Legacy.app/Contents/Info.plist 
+sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
 
 rm -rf Firefox\ Legacy.app/Contents/_CodeSignature Firefox\ Legacy.app/Contents/MacOS/*.app/Contents/_CodeSignature
 
-rm -f Firefox\ Legacy\ ${v}p$p.zip 
+rm -f Firefox\ Legacy\ $v$p.zip 
 xattr -cr Firefox\ Legacy.app
-zip -9 -r Firefox\ Legacy\ ${v}p$p.zip Firefox\ Legacy.app
+zip -9 -r Firefox\ Legacy\ $v$p.zip Firefox\ Legacy.app
