@@ -33,6 +33,7 @@ perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' 
 LC_ALL=C sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
+bash -e ./rebrand.sh $p $v || exit $?
 
 #objc
 #Binary file ./Firefox Legacy.app/Contents/Library/LaunchServices/org.mozilla.updater_real matches
