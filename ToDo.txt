@@ -1,6 +1,6 @@
-Disable HW acceleration on GMA 950
 Make binary signable, and sign it
 Fix sandbox instead of disabling it
 Hide share button on Lion
 kCTWritingDirectionAttributeName really implement
+The crash reporter doesn't work on 10.8 yet (it itself crashes)
 Auto updates

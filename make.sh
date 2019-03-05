@@ -30,6 +30,16 @@ install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versio
 install_name_tool -change /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit '@loader_path/libFxShimAppKit.dylib' Firefox.app/Contents/MacOS/XUL
 perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' Firefox.app/Contents/MacOS/XUL
 
+# gma 950
+perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firefox.app/Contents/MacOS/XUL
+#https://hg.mozilla.org/mozreview/gecko/file/tip/gfx/gl/GLContext.cpp
+#  if (mVersion < 200)
+#        return false;
+# to 100
+
+#widevine
+perl -pi -e 's/VerifyCdmHost_0/VerifyCdmNOPE_0/g' Firefox.app/Contents/MacOS/XUL
+
 LC_ALL=C sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`

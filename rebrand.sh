@@ -9,7 +9,7 @@ find Firefox\ Legacy.app/Contents/Resources/ -name InfoPlist.strings -delete
 cat update-settings.ini > Firefox\ Legacy.app/Contents/Resources/update-settings.ini
 cd Firefox\ Legacy.app/Contents/Resources/browser
 rm -rf omni
-unzip -qqd omni omni.ja 2>/dev/null
+unzip -qqd omni omni.ja 2>/dev/null || true
 cd omni
 rm -f ../omni.ja
 cp "$d/about-wordmark.svg" chrome/browser/content/branding/
@@ -23,7 +23,7 @@ cd ..
 rm -rf omni
 cd ..
 rm -rf omni
-unzip -qqd omni omni.ja 2>/dev/null
+unzip -qqd omni omni.ja 2>/dev/null || true
 cd omni
 rm -f ../omni.ja
 sed -i '' 's/%OS_VERSION%/Darwin 13.0.0/g' greprefs.js # Widevine CDM
