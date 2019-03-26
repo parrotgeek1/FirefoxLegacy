@@ -51,7 +51,8 @@ bash -e ./rebrand.sh $p $v || exit $?
 #Binary file ./Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater_real matches
 
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/crashreporter.app/Contents/MacOS/crashreporter"
-install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater"
+#deleted updater
+#install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater"
 rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' -not -name '*.py' | while read a; do 
