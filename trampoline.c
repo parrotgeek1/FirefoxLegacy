@@ -9,6 +9,19 @@
 
 #define MY_WEIRD_LC_MAIN 0x28
 
+/*
+ * The entry_point_command is a replacement for thread_command.
+ * It is used for main executables to specify the location (file offset)
+ * of main().  If -stack_size was used at link time, the stacksize
+ * field will contain the stack size need for the main thread.
+ */
+struct entry_point_command {
+    uint32_t  cmd;    /* LC_MAIN only used in MH_EXECUTE filetypes */
+    uint32_t  cmdsize;    /* 24 */
+    uint64_t  entryoff;    /* file (__TEXT) offset of main() */
+    uint64_t  stacksize;/* if not zero, initial stack size */
+};
+
 int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *apple[])
 {
     void *handle;
@@ -93,9 +106,13 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     return 1;
 }
 int main(int argc, char *argv[], char *envp[], char *apple[]) {
-    int sl = strlen(argv[0]);
-    char *argv0new = malloc(sl+6);
-    strcpy(argv0new,argv[0]);
-    strcat(argv0new,"_real");
-    return callEntryPointOfImage(argv0new,argc,argv,envp,apple);
+    char pathbuf[PATH_MAX + 1];
+    char real_executable[PATH_MAX + 1+5];
+    unsigned int bufsize = sizeof(pathbuf);
+
+    _NSGetExecutablePath( pathbuf, &bufsize);
+
+    strcpy(real_executable, pathbuf);
+    strcat(real_executable, "_real");
+    return callEntryPointOfImage(real_executable,argc,argv,envp,apple);
 }
