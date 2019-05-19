@@ -29,10 +29,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     char *error;
     int err = 0;
 
-    char actualpath[PATH_MAX+1];
-    char *real = realpath(path, actualpath);
-
-    handle = dlopen (real, RTLD_LAZY);
+    handle = dlopen (path, RTLD_LAZY);
     if (!handle) {
         puts (dlerror());
         err = 1;
@@ -50,7 +47,7 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     {
         //Name of image (includes full path)
         const char *dyld = _dyld_get_image_name(i);
-        if (!strcmp(dyld, real))
+        if (!strcmp(dyld, path))
         {
             didFind = 1;
             const struct mach_header *header = (struct mach_header *)_dyld_get_image_header(i);
@@ -106,8 +103,8 @@ int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *
     return 1;
 }
 int main(int argc, char *argv[], char *envp[], char *apple[]) {
-    char pathbuf[PATH_MAX + 1];
-    char real_executable[PATH_MAX + 1+5];
+    char pathbuf[10240 + 1];
+    char real_executable[10240 + 1+5];
     unsigned int bufsize = sizeof(pathbuf);
 
     _NSGetExecutablePath( pathbuf, &bufsize);
