@@ -78,6 +78,6 @@ sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist
 
 rm -rf Firefox\ Legacy.app/Contents/_CodeSignature Firefox\ Legacy.app/Contents/MacOS/*.app/Contents/_CodeSignature
 
-rm -f Firefox\ Legacy\ $v$p.zip 
+rm -f FirefoxLegacy$v$p.zip 
 xattr -cr Firefox\ Legacy.app
-zip -9 -r Firefox\ Legacy\ $v$p.zip Firefox\ Legacy.app
+zip -9 -r FirefoxLegacy$v$p.zip Firefox\ Legacy.app
