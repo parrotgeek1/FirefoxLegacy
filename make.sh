@@ -38,7 +38,7 @@ perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firef
 # to 100
 
 #widevine
-perl -pi -e 's/VerifyCdmHost_0/VerifyCdmNOPE_0/g' Firefox.app/Contents/MacOS/XUL
+perl -pi -e 's/VerifyCdmHost_/VerifyCdmNOPE_/g' Firefox.app/Contents/MacOS/XUL
 
 LC_ALL=C sed -i '' 's/>10.9.0</>10.7.0</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
