@@ -4,3 +4,4 @@ Hide share button on Lion
 kCTWritingDirectionAttributeName really implement
 The crash reporter doesn't work on 10.8 yet (it itself crashes), also plugin-container check!
 Auto updates
+ObjC memory leak issue?
