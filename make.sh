@@ -41,7 +41,7 @@ perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firef
 perl -pi -e 's/VerifyCdmHost_/VerifyCdmNOPE_/g' Firefox.app/Contents/MacOS/XUL
 
 #it must be 10.7.5 to work around coreui issue in 10.7.0-4
-LC_ALL=C sed -i '' 's/>10.9.0</>10.7.5</' Firefox.app/Contents/Info.plist
+LC_ALL=C /usr/bin/sed -i '' 's/>10.9.0</>10.7.5</' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
 bash -e ./rebrand.sh $p $v || exit $?
@@ -75,7 +75,7 @@ unsign/unsign Firefox\ Legacy.app/Contents/MacOS/XUL
 cat Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned > Firefox\ Legacy.app/Contents/MacOS/XUL
 rm Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned
 
-sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
+/usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
 
 rm -rf Firefox\ Legacy.app/Contents/_CodeSignature Firefox\ Legacy.app/Contents/MacOS/*.app/Contents/_CodeSignature
 

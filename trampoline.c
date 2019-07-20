@@ -15,12 +15,13 @@
  * of main().  If -stack_size was used at link time, the stacksize
  * field will contain the stack size need for the main thread.
  */
-struct entry_point_command {
-    uint32_t  cmd;    /* LC_MAIN only used in MH_EXECUTE filetypes */
-    uint32_t  cmdsize;    /* 24 */
-    uint64_t  entryoff;    /* file (__TEXT) offset of main() */
-    uint64_t  stacksize;/* if not zero, initial stack size */
-};
+// uncomment if fails to compile
+//struct entry_point_command {
+//    uint32_t  cmd;    /* LC_MAIN only used in MH_EXECUTE filetypes */
+//    uint32_t  cmdsize;    /* 24 */
+//    uint64_t  entryoff;    /* file (__TEXT) offset of main() */
+//    uint64_t  stacksize;/* if not zero, initial stack size */
+//};
 
 int callEntryPointOfImage(char *path, int argc, char **argv,char *envp[], char *apple[])
 {
