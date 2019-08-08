@@ -1,9 +1,4 @@
-Make binary signable, and sign it
 Fix sandbox instead of disabling it, enable it on 10.9+ in meantime
-Hide share button on Lion
-kCTWritingDirectionAttributeName really implement
 The crash reporter doesn't work on 10.8 yet (it itself crashes), also plugin-container check!
 Auto updates
-Add lion smart scroll/etc patches from firefox SL
 ObjC memory leak issue?
-NSProgress thing for 10.7 FF69

@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <spawn.h>
 #include <dirent.h>
-#include <fcntl.h>
-#include <sys/utsname.h>
 
 static int lion = 0;
 
@@ -32,11 +30,6 @@ typedef int (pr_realconnectx) (int, const my_sa_endpoints_t *, sae_associd_t, un
 typedef pr_realconnectx* pt_pr_realconnectx;
 static pt_pr_realconnectx realconnectx = NULL;
 
-typedef int (pr_realposix_spawn) (pid_t *restrict, const char *restrict,const posix_spawn_file_actions_t *,const posix_spawnattr_t *restrict, char *const [restrict],char *const [restrict]);
-typedef pr_realposix_spawn* pt_pr_realposix_spawn;
-static pt_pr_realposix_spawn realposix_spawn = NULL;
-static pt_pr_realposix_spawn realposix_spawnp = NULL;
-
 __attribute__((constructor)) static void initCShim(){
     void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
     if (!handle) {
@@ -44,28 +37,6 @@ __attribute__((constructor)) static void initCShim(){
         abort();
     }
     realconnectx = (pt_pr_realconnectx) dlsym(handle, "connectx");
-    realposix_spawn = (pt_pr_realposix_spawn) dlsym(handle, "posix_spawn");
-    if(!realposix_spawn) {
-        puts("No posix_spawn");
-        abort();
-    }
-    realposix_spawnp = (pt_pr_realposix_spawn) dlsym(handle, "posix_spawnp");
-    if(!realposix_spawnp) {
-        puts("No posix_spawnp");
-        abort();
-    }
-    struct utsname buffer;
-    if (uname(&buffer) != 0) {
-        puts("uname failed");
-        abort();
-    }
-
-    if(strlen(buffer.release) >= 3) {
-        if(buffer.release[0]=='1' && buffer.release[1]=='1' && buffer.release[2]=='.') {
-            lion = 1;
-        }
-    }
-
 }
 
 int connectx(int socket, const my_sa_endpoints_t *endpoints,sae_associd_t associd, unsigned int flags, const struct iovec *iov,unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
@@ -184,71 +155,4 @@ float __exp10f(float arg) {
 int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char *const parameters[], char **errorbuf) {
     if(errorbuf) *errorbuf = 0;
     return 0;
-}
-
-// from old Mozilla code
-static void SetAllFDsToCloseOnExec() {
-    const char fd_dir[] = "/dev/fd";
-    DIR *dir = opendir(fd_dir);
-    if (NULL == dir) {
-        fprintf(stderr,"Unable to open %s\n", fd_dir);
-        return;
-    }
-
-    struct dirent *ent;
-    while ((ent = readdir(dir))) {
-        // Skip . and .. entries.
-        if (ent->d_name[0] == '.')
-            continue;
-        int i = atoi(ent->d_name);
-        // We don't close stdin, stdout or stderr.
-        if (i <= STDERR_FILENO)
-            continue;
-
-        int flags = fcntl(i, F_GETFD);
-        if ((flags == -1) || (fcntl(i, F_SETFD, flags | FD_CLOEXEC) == -1)) {
-            fprintf(stderr,"fcntl failure.\n");
-        }
-    }
-}
-
-// kernel panic workaround posix_spawnattr_setflags cloexec simply does not work in Lion at all
-int
-posix_spawn(pid_t *restrict pid, const char *restrict path,
-            const posix_spawn_file_actions_t *file_actions,
-            const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
-            char *const envp[restrict]){
-    if(lion && attrp) {
-        short flags = 0;
-        if(posix_spawnattr_getflags(attrp,&flags) == 0) {
-            if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
-                flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
-                if(posix_spawnattr_setflags((posix_spawnattr_t *)attrp,flags) != 0) {
-                    abort();
-                }
-                SetAllFDsToCloseOnExec();
-            }
-        }
-    }
-    return realposix_spawn(pid,path,file_actions,attrp,argv,envp);
-}
-
-int
-posix_spawnp(pid_t *restrict pid, const char *restrict file,
-             const posix_spawn_file_actions_t *file_actions,
-             const posix_spawnattr_t *restrict attrp, char *const argv[restrict],
-             char *const envp[restrict]){
-    if(lion && attrp) {
-        short flags = 0;
-        if(posix_spawnattr_getflags(attrp,&flags) == 0) {
-            if((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) == POSIX_SPAWN_CLOEXEC_DEFAULT) {
-                flags &= ~POSIX_SPAWN_CLOEXEC_DEFAULT;
-                if(posix_spawnattr_setflags((posix_spawnattr_t *)attrp,flags) != 0) {
-                    abort();
-                }
-                SetAllFDsToCloseOnExec();
-            }
-        }
-    }
-    return realposix_spawnp(pid,file,file_actions,attrp,argv,envp);
 }
