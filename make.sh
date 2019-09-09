@@ -1,6 +1,6 @@
 #!/bin/bash -e 
 
-gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 1 -compatibility_version 1 -o libFxShim.dylib shim.c # current version 1 really?
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 169.3 -compatibility_version 1 -o libFxShim.dylib shim.c
 
 mv libFxShim.dylib Firefox.app/Contents/MacOS/
 
