@@ -11,8 +11,6 @@
 #include <spawn.h>
 #include <dirent.h>
 
-static int lion = 0;
-
 // fake TCP fast open support for libnspr
 
 typedef __uint32_t sae_associd_t;
