@@ -1,5 +1,4 @@
 Firefox Legacy*.app
 FirefoxLegacy*.zip
-libFxShim*.dylib
+libFxShim.dylib
 Firefox.app
-trampoline
