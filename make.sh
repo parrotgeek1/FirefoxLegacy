@@ -29,7 +29,7 @@ rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 /usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
 
-codesign --deep -f -s "Mac Dev" Firefox\ Legacy.app
+codesign --deep -f -s "iPhone Dev" Firefox\ Legacy.app
 
 rm -f FirefoxLegacy$v$p.zip 
 xattr -cr Firefox\ Legacy.app
