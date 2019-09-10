@@ -8,8 +8,6 @@
 #undef _POSIX_C_SOURCE
 #include <dlfcn.h>
 #include <unistd.h>
-#include <spawn.h>
-#include <dirent.h>
 
 // fake TCP fast open support for libnspr
 
