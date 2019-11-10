@@ -1,3 +1,3 @@
-Fix sandbox instead of disabling it, enable it on 10.9+ in meantime
+Fix sandbox instead of disabling it
 Auto updates
 ObjC memory leak issue?

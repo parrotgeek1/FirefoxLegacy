@@ -26,6 +26,10 @@ typedef int (pr_realconnectx) (int, const my_sa_endpoints_t *, sae_associd_t, un
 typedef pr_realconnectx* pt_pr_realconnectx;
 static pt_pr_realconnectx realconnectx = NULL;
 
+typedef int (pr_realsandbox_init_with_parameters) (const char *, uint64_t, const char *const[], char **);
+typedef pr_realsandbox_init_with_parameters* pt_pr_realsandbox_init_with_parameters;
+static pt_pr_realsandbox_init_with_parameters realsandbox_init_with_parameters = NULL;
+
 __attribute__((constructor)) static void initCShim(){
     void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
     if (!handle) {
@@ -33,6 +37,14 @@ __attribute__((constructor)) static void initCShim(){
         abort();
     }
     realconnectx = (pt_pr_realconnectx) dlsym(handle, "connectx");
+    if(realconnectx) {
+        // 10.9+
+        realsandbox_init_with_parameters = (pt_pr_realsandbox_init_with_parameters) dlsym(handle, "sandbox_init_with_parameters");
+        if(!realsandbox_init_with_parameters) {
+            fprintf(stderr,"weird, can't find sandbox_init_with_parameters");
+            abort();
+        }
+    }
 }
 
 int connectx(int socket, const my_sa_endpoints_t *endpoints,sae_associd_t associd, unsigned int flags, const struct iovec *iov,unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
@@ -149,6 +161,7 @@ float __exp10f(float arg) {
 }
 
 int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char *const parameters[], char **errorbuf) {
+    if(realsandbox_init_with_parameters) return realsandbox_init_with_parameters(profile, flags, parameters, errorbuf);
     if(errorbuf) *errorbuf = 0;
     return 0;
 }
