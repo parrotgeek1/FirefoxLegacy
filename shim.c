@@ -36,6 +36,9 @@ typedef int (pr_realposix_spawn) (pid_t *restrict, const char *restrict,const po
 typedef pr_realposix_spawn* pt_pr_realposix_spawn;
 static pt_pr_realposix_spawn realposix_spawn = NULL;
 static pt_pr_realposix_spawn realposix_spawnp = NULL;
+typedef int (pr_realsandbox_init_with_parameters) (const char *, uint64_t, const char *const[], char **);
+typedef pr_realsandbox_init_with_parameters* pt_pr_realsandbox_init_with_parameters;
+static pt_pr_realsandbox_init_with_parameters realsandbox_init_with_parameters = NULL;
 
 __attribute__((constructor)) static void initCShim(){
     void *handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOW);
@@ -66,6 +69,14 @@ __attribute__((constructor)) static void initCShim(){
         }
     }
 
+    if(realconnectx) {
+        // 10.9+
+        realsandbox_init_with_parameters = (pt_pr_realsandbox_init_with_parameters) dlsym(handle, "sandbox_init_with_parameters");
+        if(!realsandbox_init_with_parameters) {
+            fprintf(stderr,"weird, can't find sandbox_init_with_parameters");
+            abort();
+        }
+    }
 }
 
 int connectx(int socket, const my_sa_endpoints_t *endpoints,sae_associd_t associd, unsigned int flags, const struct iovec *iov,unsigned int iovcnt, size_t *len, sae_connid_t *connid) {
@@ -182,6 +193,7 @@ float __exp10f(float arg) {
 }
 
 int sandbox_init_with_parameters(const char *profile, uint64_t flags, const char *const parameters[], char **errorbuf) {
+    if(realsandbox_init_with_parameters) return realsandbox_init_with_parameters(profile, flags, parameters, errorbuf);
     if(errorbuf) *errorbuf = 0;
     return 0;
 }
