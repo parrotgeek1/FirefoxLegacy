@@ -1,3 +1,9 @@
+fix window buttons
+CMVideoFormatDescriptionGetH264ParameterSetAtIndex symbol issue
+
+dyld: Symbol not found: _mach_port_construct
+  Referenced from: /Users/user/Library/Application Support/Firefox/Profiles/jfjb1t8u.default-beta/gmp-widevinecdm/4.10.1582.2/libwidevinecdm.dylib
+  Expected in: /usr/lib/libSystem.B.dylib
+
 Fix sandbox instead of disabling it
-Auto updates
 ObjC memory leak issue?
