@@ -1,9 +1,13 @@
 Make binary signable, and sign it
-Fix sandbox instead of disabling it, enable it on 10.9+ in meantime
+Fix sandbox instead of disabling it
 Hide share button on Lion
 kCTWritingDirectionAttributeName really implement
 The crash reporter doesn't work on 10.8 yet (it itself crashes), also plugin-container check!
 Auto updates
 Add lion smart scroll/etc patches from firefox SL
 ObjC memory leak issue?
-NSProgress thing for 10.7 FF69
+fix drm crash
+fix crashes in emails (jitsi meet crashes when camera authorized, icloud notes webgl issue, crash when plug in headphones)
+"it doesn't honour some OS X system wide "shortcuts" which other Firefox-based browsers do (at least to my previous knowledge)  - most notably, revealing the Dictionary pop-up by double-tapping a word with 3 fingers." 
+fix does not open link from another app if not open already (trampoline?)
+correct library versions
