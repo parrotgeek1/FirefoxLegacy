@@ -32,6 +32,7 @@ unzip -qqd omni omni.ja 2>/dev/null || true
 cd omni
 rm -f ../omni.ja
 /usr/bin/sed -i '' 's/%OS_VERSION%/Darwin 13.0.0/g' greprefs.js # Widevine CDM
+echo 'pref("gfx.core-animation.enabled", false);' >> greprefs.js # title bar fix 70/71
 zip -qr0XD ../omni.ja *
 cd ..
 rm -rf omni
