@@ -1,4 +1,4 @@
-#!/bin/bash -e 
+#!/bin/bash -e
 
 clang -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 169.3 -compatibility_version 1 -o libFxShim.dylib shim.c
 
@@ -37,7 +37,7 @@ rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 /usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
 
-codesign --deep -f -s "iPhone Dev" Firefox\ Legacy.app >/dev/null 2>&1
+codesign --deep -f -s "-" Firefox\ Legacy.app >/dev/null 2>&1
 
 rm -f FirefoxLegacy$v$p.zip 
 xattr -cr Firefox\ Legacy.app
