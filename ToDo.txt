@@ -1,4 +1,4 @@
-fix window buttons
+fix window buttons in a better way
 CMVideoFormatDescriptionGetH264ParameterSetAtIndex symbol issue
 
 dyld: Symbol not found: _mach_port_construct
@@ -7,3 +7,5 @@ dyld: Symbol not found: _mach_port_construct
 
 Fix sandbox instead of disabling it
 ObjC memory leak issue?
+
+"-[NSProgress publish] only works when the user info dictionary contains a valid NSProgressFileURLKey entry"
