@@ -1,0 +1,12 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableFirefoxStudies": true,
+    "DisableTelemetry": true,
+    "SupportMenu": {
+      "Title": "Firefox Legacy Support",
+      "URL": "https://parrotgeek.com/fxlegacy.html",
+      "AccessKey": "S"
+    }
+  }
+}

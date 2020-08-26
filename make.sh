@@ -79,6 +79,9 @@ rm Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned
 
 rm -rf Firefox\ Legacy.app/Contents/_CodeSignature Firefox\ Legacy.app/Contents/MacOS/*.app/Contents/_CodeSignature
 
+mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
+cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
+
 rm -f FirefoxLegacy$v$p.zip 
 xattr -cr Firefox\ Legacy.app
 zip -9 -r FirefoxLegacy$v$p.zip Firefox\ Legacy.app
