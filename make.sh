@@ -2,20 +2,26 @@
 
 cd unsign; make -s; cd ..
 
-gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 1 -compatibility_version 1 -o libFxShim.dylib shim.c
+#ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libSystem.B.dylib -current_version 159.1 -compatibility_version 1 -o libFxShim.dylib shim.c
 
 # NSObject was in CoreFoundation in Lion, not libobjc
-gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libobjc.A.dylib -Wl,-reexport_library,/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation -current_version 1 -compatibility_version 1 -o libFxShimObjc.dylib shimObjc.c
+#ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/usr/lib/libobjc.A.dylib -Wl,-reexport_library,/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation -current_version 228 -compatibility_version 1 -o libFxShimObjc.dylib shimObjc.c
 
-gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation -current_version 300 -compatibility_version 300 -o libFxShimFoundation.dylib shimFoundation.m
+#ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation -current_version 833.25 -compatibility_version 300 -o libFxShimFoundation.dylib shimFoundation.m
 
+#ok
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/Versions/A/CoreText -framework CoreFoundation -current_version 1 -compatibility_version 1 -o libFxShimCoreText.dylib shimCoreText.c
 
-gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit -current_version 45 -compatibility_version 45 -o libFxShimAppKit.dylib shimAppKit.m
+#ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit -current_version 1138.51 -compatibility_version 45 -o libFxShimAppKit.dylib shimAppKit.m
 
+#ok
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -current_version 1 -compatibility_version 1 -framework CoreFoundation -o libFxShimVT.dylib shimVT.c
 
-gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-sign-compare -arch x86_64 -mmacosx-version-min=10.7 -o trampoline trampoline.c
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-sign-compare -arch x86_64 -mmacosx-version-min=10.7 -framework AppKit -o trampoline trampoline.c
 
 mv libFxShim*.dylib Firefox.app/Contents/MacOS/
 

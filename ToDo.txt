@@ -3,4 +3,3 @@ fix drm crash mach_port_construct
 isLionSmartMagnifyEvent
 "it doesn't honour some OS X system wide "shortcuts" which other Firefox-based browsers do (at least to my previous knowledge)  - most notably, revealing the Dictionary pop-up by double-tapping a word with 3 fingers." 
 fix does not open link from another app if not open already (trampoline?)
-correct library versions
