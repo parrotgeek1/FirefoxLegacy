@@ -1,11 +1,3 @@
-fix window buttons in a better way
 CMVideoFormatDescriptionGetH264ParameterSetAtIndex symbol issue
-
-dyld: Symbol not found: _mach_port_construct
-  Referenced from: /Users/user/Library/Application Support/Firefox/Profiles/jfjb1t8u.default-beta/gmp-widevinecdm/4.10.1582.2/libwidevinecdm.dylib
-  Expected in: /usr/lib/libSystem.B.dylib
-
-Fix sandbox instead of disabling it
-ObjC memory leak issue?
-
+drm fix mach_port_construct
 "-[NSProgress publish] only works when the user info dictionary contains a valid NSProgressFileURLKey entry"
