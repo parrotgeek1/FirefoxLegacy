@@ -1,2 +1,2 @@
 # FirefoxLegacy
-Porting the latest Firefox version to Mac OS X 10.7-10.8
+Porting more modern Firefox versions to Mac OS X 10.7
