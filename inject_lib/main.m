@@ -212,7 +212,7 @@ int main(int argc, const char * argv[])
 
     NSString* dylib_path = [NSString stringWithUTF8String:argv[2]];
     NSString* dylib = [dylib_path lastPathComponent];
-    DYLIB_PATH = [NSString stringWithFormat:@"@executable_path/%@", dylib];
+    DYLIB_PATH = [NSString stringWithFormat:@"@loader_path/%@", dylib];
 
     inject_file(binary_path, DYLIB_PATH);
 
