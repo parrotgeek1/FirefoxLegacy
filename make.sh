@@ -4,6 +4,8 @@ clang -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynami
 
 clang -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -framework CoreFoundation -Wl,-reexport_library,/System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox -current_version 1 -compatibility_version 1 -o libFxShimVT.dylib shimVT.c
 
+clang -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -framework CoreFoundation -Wl,-reexport_library,/System/Library/Frameworks/CoreMedia.framework/Versions/A/CoreMedia -current_version 1 -compatibility_version 1 -o libFxShimCM.dylib shimCM.c
+
 clang -lobjc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -framework AppKit -current_version 1 -compatibility_version 1 -o libAppKitFixes.dylib AppKitFixes.m
 
 mv libFxShim*.dylib libAppKitFixes.dylib Firefox.app/Contents/MacOS/
@@ -15,6 +17,8 @@ install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dyl
 install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dylib' Firefox.app/Contents/MacOS/XUL
 
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
+
+install_name_tool -change /System/Library/Frameworks/CoreMedia.framework/Versions/A/CoreMedia '@loader_path/libFxShimCM.dylib' Firefox.app/Contents/MacOS/XUL
 
 inject_lib/inject_lib Firefox.app/Contents/MacOS/XUL Firefox.app/Contents/MacOS/libAppKitFixes.dylib >/dev/null 2>&1
 
@@ -36,6 +40,9 @@ bash -e ./rebrand.sh $p $v || exit $?
 rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 /usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
+
+mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
+cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
 
 codesign --deep -f -s "-" Firefox\ Legacy.app >/dev/null 2>&1
 

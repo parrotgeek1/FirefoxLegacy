@@ -1,3 +1,2 @@
-CMVideoFormatDescriptionGetH264ParameterSetAtIndex symbol issue
 drm fix mach_port_construct
 "-[NSProgress publish] only works when the user info dictionary contains a valid NSProgressFileURLKey entry"
