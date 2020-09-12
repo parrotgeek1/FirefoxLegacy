@@ -39,6 +39,7 @@ install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versio
 install_name_tool -change /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit '@loader_path/libFxShimAppKit.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/Security.framework/Versions/A/Security '@loader_path/libFxShimSecurity.dylib' Firefox.app/Contents/MacOS/XUL
 perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' Firefox.app/Contents/MacOS/XUL
+perl -pi -e 's/OBJC_CLASS_\$_NSSharingServic2PickerTouchBarItem/OBJC_CLASS_\$_NSSharingServicePickerTouchBarItem/g' Firefox.app/Contents/MacOS/XUL # fix false positive
 
 # gma 950
 perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firefox.app/Contents/MacOS/XUL
