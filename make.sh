@@ -21,6 +21,9 @@ gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamicl
 #ok
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -current_version 1 -compatibility_version 1 -framework CoreFoundation -o libFxShimVT.dylib shimVT.c
 
+#ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/Security.framework/Versions/A/Security -current_version 55148.6 -compatibility_version 1 -o libFxShimSecurity.dylib shimSecurity.c
+
 gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-sign-compare -arch x86_64 -mmacosx-version-min=10.7 -framework AppKit -o trampoline trampoline.c
 
 mv libFxShim*.dylib Firefox.app/Contents/MacOS/
@@ -34,6 +37,7 @@ install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/libFxShimObjc.d
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation '@loader_path/libFxShimFoundation.dylib' Firefox.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit '@loader_path/libFxShimAppKit.dylib' Firefox.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/Security.framework/Versions/A/Security '@loader_path/libFxShimSecurity.dylib' Firefox.app/Contents/MacOS/XUL
 perl -pi -e 's/OBJC_CLASS_\$_NSSharingService/OBJC_CLASS_\$_NSSharingServic2/g' Firefox.app/Contents/MacOS/XUL
 
 # gma 950

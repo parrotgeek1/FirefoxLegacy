@@ -1,3 +1,4 @@
 The crash reporter doesn't work on 10.8 yet (it itself crashes)
 fix drm crash mach_port_construct
 isLionSmartMagnifyEvent
+fix more undefined symbols :(
