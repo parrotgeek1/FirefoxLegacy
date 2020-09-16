@@ -8,6 +8,8 @@ clang -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynami
 
 clang -lobjc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -framework AppKit -current_version 1 -compatibility_version 1 -o libAppKitFixes.dylib AppKitFixes.m
 
+gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.8 -Wl,-reexport_library,/System/Library/Frameworks/Security.framework/Versions/A/Security -current_version 55163.44 -compatibility_version 1 -o libFxShimSecurity.dylib shimSecurity.c
+
 mv libFxShim*.dylib libAppKitFixes.dylib Firefox.app/Contents/MacOS/
 
 install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dylib' Firefox.app/Contents/MacOS/libnss3.dylib 
@@ -19,6 +21,8 @@ install_name_tool -change /usr/lib/libSystem.B.dylib '@loader_path/libFxShim.dyl
 install_name_tool -change /System/Library/Frameworks/VideoToolbox.framework/Versions/A/VideoToolbox '@loader_path/libFxShimVT.dylib' Firefox.app/Contents/MacOS/XUL
 
 install_name_tool -change /System/Library/Frameworks/CoreMedia.framework/Versions/A/CoreMedia '@loader_path/libFxShimCM.dylib' Firefox.app/Contents/MacOS/XUL
+
+install_name_tool -change /System/Library/Frameworks/Security.framework/Versions/A/Security '@loader_path/libFxShimSecurity.dylib' Firefox.app/Contents/MacOS/XUL
 
 inject_lib/inject_lib Firefox.app/Contents/MacOS/XUL Firefox.app/Contents/MacOS/libAppKitFixes.dylib >/dev/null 2>&1
 
