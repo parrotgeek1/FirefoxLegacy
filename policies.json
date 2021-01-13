@@ -4,9 +4,9 @@
     "DisableFirefoxStudies": true,
     "DisableTelemetry": true,
     "SupportMenu": {
-      "Title": "Firefox Legacy Homepage (ParrotGeek)",
+      "Title": "Firefox Legacy Home Page (ParrotGeek)",
       "URL": "https://parrotgeek.com/fxlegacy.html",
-      "AccessKey": "S"
+      "AccessKey": "L"
     }
   }
 }
