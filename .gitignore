@@ -3,3 +3,4 @@ FirefoxLegacy*.zip
 *.dylib
 Firefox.app
 unsign
+*.webloc
