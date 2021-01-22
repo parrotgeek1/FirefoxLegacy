@@ -24,6 +24,9 @@ install_name_tool -change /System/Library/Frameworks/CoreMedia.framework/Version
 
 install_name_tool -change /System/Library/Frameworks/Security.framework/Versions/A/Security '@loader_path/libFxShimSecurity.dylib' Firefox.app/Contents/MacOS/XUL
 
+cd inject_lib
+./m.sh
+cd ..
 inject_lib/inject_lib Firefox.app/Contents/MacOS/XUL Firefox.app/Contents/MacOS/libAppKitFixes.dylib >/dev/null 2>&1
 
 # gma 950
