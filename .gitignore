@@ -4,3 +4,4 @@ libFxShim*.dylib
 Firefox.app
 trampoline
 *.webloc
+inject_lib
