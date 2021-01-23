@@ -5,3 +5,4 @@ Firefox.app
 trampoline
 *.webloc
 inject_lib
+findUndefSyms_nonSDK.sh
