@@ -9,6 +9,7 @@ mv -f /tmp/_fusym_tmp_ /tmp/_fusym_tmp
 echo Generating used symbol list
 nm -u -m "$1/Contents/MacOS/XUL" "$1/Contents/MacOS/"*.dylib 2>/dev/null | grep -vF " weak " | grep -v "^$1" |grep -vF .objc_class_name_ | sed 's/.* external _/_/' | cut -d ' ' -f1 | grep . | sort | uniq > /tmp/_fusym_tmp2
 echo Checking symbols
-comm -23 /tmp/_fusym_tmp2 /tmp/_fusym_tmp > undef_symbols.txt
+echo ---Undefined symbols---
+diff /tmp/_fusym_tmp2 /tmp/_fusym_tmp | grep '^< ' | cut -c3-
 rm -f /tmp/_fusym_tmp*
-echo Done, check undef_symbols.txt
+echo ---End---
