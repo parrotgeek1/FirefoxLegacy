@@ -5,3 +5,4 @@ Firefox.app
 unsign
 *.webloc
 inject_lib/inject_lib
+findUndefSyms_nonSDK.sh
