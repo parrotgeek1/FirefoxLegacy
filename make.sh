@@ -16,6 +16,9 @@ gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -lobjc -mmacosx-ver
 gcc -fPIC -O3 -Wall -Wextra -Werror -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/Versions/A/CoreText -framework CoreFoundation -current_version 1 -compatibility_version 1 -o libFxShimCoreText.dylib shimCoreText.c
 
 #ok
+gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics -current_version 600 -compatibility_version 64 -o libFxShimCoreGraphics.dylib shimCoreGraphics.c
+
+#ok
 gcc -fPIC -O3 -Wall -Wextra -Werror -Wno-unused-parameter -arch x86_64 -dynamiclib -lobjc -mmacosx-version-min=10.7 -Wl,-reexport_library,/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit -current_version 1138.51 -compatibility_version 45 -o libFxShimAppKit.dylib shimAppKit.m
 
 #ok
@@ -58,13 +61,7 @@ p=`cat patch.txt`
 bash -e ./rebrand.sh $p $v || exit $?
 
 #objc
-#Binary file ./Firefox Legacy.app/Contents/Library/LaunchServices/org.mozilla.updater_real matches
-#Binary file ./Firefox Legacy.app/Contents/MacOS/crashreporter.app/Contents/MacOS/crashreporter_real matches
-#Binary file ./Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater_real matches
-
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/crashreporter.app/Contents/MacOS/crashreporter"
-#deleted updater
-#install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/updater.app/Contents/MacOS/org.mozilla.updater"
 rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' -not -name '*.py' | while read a; do 
@@ -78,7 +75,7 @@ ls Firefox\ Legacy.app/Contents/MacOS/*.dylib | fgrep -v libFxShim | while read 
 	rm "$a.unsigned"
 done
 
-install_name_tool -change /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics Firefox\ Legacy.app/Contents/MacOS/XUL
+install_name_tool -change /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics '@loader_path/libFxShimCoreGraphics.dylib' Firefox\ Legacy.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText '@loader_path/libFxShimCoreText.dylib' Firefox\ Legacy.app/Contents/MacOS/XUL
 install_name_tool -change /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/ImageIO Firefox\ Legacy.app/Contents/MacOS/XUL
 
@@ -86,10 +83,13 @@ unsign/unsign Firefox\ Legacy.app/Contents/MacOS/XUL
 cat Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned > Firefox\ Legacy.app/Contents/MacOS/XUL
 rm Firefox\ Legacy.app/Contents/MacOS/XUL.unsigned
 
-/usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
-
 rm -rf Firefox\ Legacy.app/Contents/_CodeSignature Firefox\ Legacy.app/Contents/MacOS/*.app/Contents/_CodeSignature
 
+#updater/telemetry/studies removal, home page link
+rm -rf Firefox\ Legacy.app/Contents/MacOS/updater.app
+plutil -remove SMPrivilegedExecutables Firefox\ Legacy.app/Contents/Info.plist
+rm -rf Firefox\ Legacy.app/Contents/Library 
+find Firefox\ Legacy.app -name '*.sig' -not -name libclearkey.dylib.sig -type f -delete
 mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
 cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
 
