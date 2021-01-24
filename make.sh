@@ -39,15 +39,16 @@ perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firef
 #widevine
 perl -pi -e 's/VerifyCdmHost_/VerifyCdmNOPE_/g' Firefox.app/Contents/MacOS/XUL
 
-LC_ALL=C /usr/bin/sed -i '' 's/>10.9.0</>10.8.0</' Firefox.app/Contents/Info.plist
+LC_ALL=C /usr/bin/sed -i '' 's/>10.9.0</>10.8.0</g' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
 bash -e ./rebrand.sh $p $v || exit $?
 
-rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
-
-/usr/bin/sed -i '' "s/$v/$v$p/" Firefox\ Legacy.app/Contents/Info.plist 
-
+#updater/telemetry/studies removal, home page link
+rm -rf Firefox\ Legacy.app/Contents/MacOS/updater.app
+plutil -remove SMPrivilegedExecutables Firefox\ Legacy.app/Contents/Info.plist
+rm -rf Firefox\ Legacy.app/Contents/Library 
+find Firefox\ Legacy.app -name '*.sig' -not -name libclearkey.dylib.sig -type f -delete
 mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
 cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
 

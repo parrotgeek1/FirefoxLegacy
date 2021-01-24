@@ -4,8 +4,8 @@ p=$1
 v=$2
 rm -rf Firefox\ Legacy.app
 mv Firefox.app Firefox\ Legacy.app
-rm -rf Firefox\ Legacy.app/Contents/MacOS/updater.app
-/usr/bin/sed -i '' 's/Firefox/Firefox Legacy/' Firefox\ Legacy.app/Contents/Info.plist 
+/usr/bin/sed -i '' 's/Firefox/Firefox Legacy/g' Firefox\ Legacy.app/Contents/Info.plist
+/usr/bin/sed -i '' "s/$v/$v$p/g" Firefox\ Legacy.app/Contents/Info.plist 
 find Firefox\ Legacy.app/Contents/Resources/ -name InfoPlist.strings -delete 
 cd Firefox\ Legacy.app/Contents/Resources/browser
 rm -rf omni
