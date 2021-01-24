@@ -55,14 +55,13 @@ perl -pi -e 's/\x3D\xC8\x00\x00\x00\x0F\x82/\x3D\x64\x00\x00\x00\x0F\x82/' Firef
 perl -pi -e 's/VerifyCdmHost_/VerifyCdmNOPE_/g' Firefox.app/Contents/MacOS/XUL
 
 #it must be 10.7.5 to work around coreui issue in 10.7.0-4
-LC_ALL=C /usr/bin/sed -i '' 's/>10.9.0</>10.7.5</' Firefox.app/Contents/Info.plist
+LC_ALL=C /usr/bin/sed -i '' 's/>10.9.0</>10.7.5</g' Firefox.app/Contents/Info.plist
 v=`cat Firefox.app/Contents/Info.plist  | grep -A1 CFBundleShortVersionString | tail -n1 | cut -d '>' -f2 | cut -d '<' -f1`
 p=`cat patch.txt`
 bash -e ./rebrand.sh $p $v || exit $?
 
 #objc
 install_name_tool -change /usr/lib/libobjc.A.dylib '@loader_path/../../../libFxShimObjc.dylib' "Firefox Legacy.app/Contents/MacOS/crashreporter.app/Contents/MacOS/crashreporter"
-rm -rf "Firefox Legacy.app/Contents/Library/LaunchServices"
 
 find Firefox\ Legacy.app -type f -perm 0755 -not -name '*.dylib' -not -name '*.py' | while read a; do 
 file "$a" | grep -q executable && (mv "$a" "${a}_real"; cp trampoline "$a"; unsign/unsign "${a}_real"; cat "${a}_real.unsigned" > "${a}_real"; rm "${a}_real.unsigned"; perl -pi -e 's/\x28\x00\x00\x80/\x28\x00\x00\x00/' "${a}_real") || true
