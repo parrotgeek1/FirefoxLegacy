@@ -54,6 +54,6 @@ cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies
 
 codesign --deep -f -s "-" Firefox\ Legacy.app >/dev/null 2>&1
 
-rm -f FirefoxLegacy$v$p.zip 
+rm -f FirefoxLegacy$v$p.zip inject_lib/inject_lib
 xattr -cr Firefox\ Legacy.app
 zip -9 -r FirefoxLegacy$v$p.zip Firefox\ Legacy.app
