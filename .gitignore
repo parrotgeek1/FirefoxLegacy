@@ -1,8 +1,5 @@
-Firefox Legacy*.app
-FirefoxLegacy*.zip
-*.dylib
-Firefox.app
+*.app
+*.zip
 unsign
 *.webloc
-inject_lib/inject_lib
 findUndefSyms_nonSDK.sh
