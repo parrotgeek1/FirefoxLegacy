@@ -1,8 +1,5 @@
-Firefox Legacy*.app
-FirefoxLegacy*.zip
-libFxShim*.dylib
-Firefox.app
-trampoline
+*.app
+*.zip
 *.webloc
 inject_lib
 findUndefSyms_nonSDK.sh
