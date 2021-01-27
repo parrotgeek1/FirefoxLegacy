@@ -92,6 +92,6 @@ find Firefox\ Legacy.app -name '*.sig' -not -name libclearkey.dylib.sig -type f 
 mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
 cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
 
-rm -f FirefoxLegacy$v$p.zip 
+rm -f FirefoxLegacy$v$p.zip unsign/unsign unsign/*.o
 xattr -cr Firefox\ Legacy.app
 zip -9 -r FirefoxLegacy$v$p.zip Firefox\ Legacy.app
