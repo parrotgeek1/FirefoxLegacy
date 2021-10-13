@@ -52,7 +52,7 @@ find Firefox\ Legacy.app -name '*.sig' -not -name libclearkey.dylib.sig -type f 
 mkdir -p Firefox\ Legacy.app/Contents/Resources/distribution
 cat policies.json > Firefox\ Legacy.app/Contents/Resources/distribution/policies.json
 
-codesign --deep -f -s "-" Firefox\ Legacy.app >/dev/null 2>&1
+codesign --deep -f -s "-" --digest-algorithm=sha1,sha256 Firefox\ Legacy.app >/dev/null 2>&1
 
 rm -f FirefoxLegacy$v$p.zip inject_lib/inject_lib
 xattr -cr Firefox\ Legacy.app
