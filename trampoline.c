@@ -1,3 +1,5 @@
+// based on https://gist.github.com/steventroughtonsmith/33e2962f85b8b4a9112c
+
 #include <stdio.h>
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
